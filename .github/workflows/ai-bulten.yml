@@ -1,0 +1,32 @@
+# Haftalık AI Haber Bülteni - GitHub Actions (ücretsiz, kartsız)
+# Her Cumartesi 20:00 Türkiye saati = 17:00 UTC
+
+name: AI Haber Bülteni
+
+on:
+  schedule:
+    - cron: '0 17 * * 6'   # Cumartesi 17:00 UTC
+  workflow_dispatch:       # Manuel çalıştırma: Actions sekmesinden "Run workflow"
+
+jobs:
+  bulten:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repoyu al
+        uses: actions/checkout@v4
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Bağımlılıkları kur
+        run: pip install -r requirements.txt
+
+      - name: Bülteni çalıştır
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          ALICI_EMAIL: ${{ secrets.ALICI_EMAIL }}
+        run: python bulten.py
