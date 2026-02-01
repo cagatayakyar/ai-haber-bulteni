@@ -1,0 +1,16 @@
+services:
+  - type: cron
+    name: ai-haber-bulteni
+    env: python
+    schedule: "0 17 * * 6"  # Her Cumartesi 17:00 UTC (Türkiye 20:00)
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bulten.py
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GMAIL_ADDRESS
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: ALICI_EMAIL
+        sync: false
