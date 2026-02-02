@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 import os
+import re
 from dotenv import load_dotenv
 import markdown
 
@@ -104,6 +105,12 @@ def email_gonder(icerik):
     
     # Gemini'nin Markdown çıktısını HTML'e çevir (başlıklar, linkler düzgün görünsün)
     icerik_html = markdown.markdown(icerik, extensions=['extra', 'nl2br'])
+    # Düz yazılmış URL'leri tıklanabilir link yap (e-postada aktif olsun)
+    icerik_html = re.sub(
+        r'(\s)(https?://[^\s<"]+)(\s|<|$)',
+        r'\1<a href="\2" style="color: #2563eb;" target="_blank" rel="noopener">\2</a>\3',
+        icerik_html
+    )
     
     mesaj = MIMEMultipart('alternative')
     mesaj['Subject'] = f"🤖 Haftalık AI Haber Bülteni - {datetime.now().strftime('%d %B %Y')}"
