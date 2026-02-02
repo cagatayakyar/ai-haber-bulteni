@@ -54,7 +54,7 @@ def gemini_ile_ozetle(haberler):
     print("🤖 Gemini AI ile özetleniyor...")
     
     genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
-    model = genai.GenerativeModel('models/gemini-2.5-flash')
+    model = genai.GenerativeModel('gemini-1.5-flash')
     
     # Haberleri metin haline getir
     haber_metni = "\n\n".join([
@@ -103,14 +103,20 @@ def email_gonder(icerik):
     sifre = os.getenv('GMAIL_APP_PASSWORD')
     alici = os.getenv('ALICI_EMAIL', gonderen)  # Farklı adrese gönder
     
+    if not icerik or not isinstance(icerik, str):
+        icerik = ""
+    
     # Gemini'nin Markdown çıktısını HTML'e çevir (başlıklar, linkler düzgün görünsün)
-    icerik_html = markdown.markdown(icerik, extensions=['extra', 'nl2br'])
-    # Düz yazılmış URL'leri tıklanabilir link yap (e-postada aktif olsun)
-    icerik_html = re.sub(
-        r'(\s)(https?://[^\s<"]+)(\s|<|$)',
-        r'\1<a href="\2" style="color: #2563eb;" target="_blank" rel="noopener">\2</a>\3',
-        icerik_html
-    )
+    try:
+        icerik_html = markdown.markdown(icerik, extensions=['extra', 'nl2br'])
+        # Düz yazılmış URL'leri tıklanabilir link yap (e-postada aktif olsun)
+        icerik_html = re.sub(
+            r'(\s)(https?://[^\s<"]+)(\s|<|$)',
+            r'\1<a href="\2" style="color: #2563eb;" target="_blank" rel="noopener">\2</a>\3',
+            icerik_html
+        )
+    except Exception:
+        icerik_html = icerik.replace("\n", "<br>")
     
     mesaj = MIMEMultipart('alternative')
     mesaj['Subject'] = f"🤖 Haftalık AI Haber Bülteni - {datetime.now().strftime('%d %B %Y')}"
