@@ -54,7 +54,7 @@ def gemini_ile_ozetle(haberler):
     print("🤖 Gemini AI ile özetleniyor...")
     
     genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-2.5-flash')
     
     # Haberleri metin haline getir
     haber_metni = "\n\n".join([
@@ -161,14 +161,14 @@ def main():
     
     if not haberler:
         print("❌ Haber bulunamadı, program sonlanıyor.")
-        return
+        exit(1)
     
     # 2. Gemini ile özetle
     ozet = gemini_ile_ozetle(haberler)
     
     if not ozet:
         print("❌ Özetleme başarısız, program sonlanıyor.")
-        return
+        exit(1)
     
     # 3. E-posta gönder
     basarili = email_gonder(ozet)
@@ -177,8 +177,10 @@ def main():
         print("\n" + "="*50)
         print("✅ BÜLTEN BAŞARIYLA GÖNDERİLDİ!")
         print("="*50 + "\n")
+        exit(0)
     else:
-        print("\n❌ İşlem tamamlanamadı.\n")
+        print("\n❌ E-posta gönderilemedi. GitHub Actions logunda 'E-posta hatası' mesajına bakın.\n")
+        exit(1)
 
 if __name__ == "__main__":
     main()
